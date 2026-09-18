@@ -6,12 +6,17 @@ FindUrDrugs is a medicine discovery and pharmacy operations project with an Andr
 
 ```text
 FindUrDrugs/
+├── .env.example        # Shared database environment template
+├── .gitignore          # Ignore rules for local env files and build artifacts
 ├── android/            # Android client
 ├── backend/            # Express + TypeScript API
 ├── database/           # SQL schema and initialization scripts
+├── docs/               # Project documentation and design notes
 ├── docker-compose.yml  # Local PostgreSQL service
-└── README.md
+└── README.md           # Root setup and development guide
 ```
+
+The `android/` and `docs/` directories are included intentionally even when they are empty, so the repository structure already reflects the planned client and documentation areas.
 
 ## Prerequisites
 
