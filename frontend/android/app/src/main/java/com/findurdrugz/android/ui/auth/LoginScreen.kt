@@ -1,11 +1,14 @@
 package com.findurdrugz.android.ui.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.findurdrugz.android.R
 
 @Composable
 fun LoginScreen(
@@ -32,7 +35,14 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("FindUrDrugz Login", style = MaterialTheme.typography.headlineSmall)
+        Image(
+            painter = painterResource(id = R.drawable.app_log),
+            contentDescription = "FindUrDrugz logo",
+            modifier = Modifier.size(96.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("FindUrDrugs Login", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
