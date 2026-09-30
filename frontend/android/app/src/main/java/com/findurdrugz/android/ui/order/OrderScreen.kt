@@ -2,17 +2,13 @@ package com.findurdrugz.android.ui.order
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-/**
- * Lets the user confirm details and submit either a delivery order or a
- * pickup reservation for the medicine they selected on SearchScreen.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderScreen(
@@ -21,17 +17,20 @@ fun OrderScreen(
     onOrderComplete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Reads the medicine selected on the previous screen (see SelectedMedicineHolder).
     val medicine = SelectedMedicineHolder.selected
 
     var quantity by remember { mutableStateOf("1") }
     var address by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
-    var isDelivery by remember { mutableStateOf(true) } // toggles between Order vs Reservation flow
+    var isDelivery by remember { mutableStateOf(true) }
 
     val uiState by viewModel.uiState.collectAsState()
+    val isPremium by viewModel.isPremium.collectAsState()
 
-    // Once the order/reservation succeeds, navigate away automatically.
+    LaunchedEffect(Unit) {
+        viewModel.checkPremiumStatus()
+    }
+
     LaunchedEffect(uiState) {
         if (uiState is OrderUiState.Success) {
             onOrderComplete()
@@ -45,14 +44,12 @@ fun OrderScreen(
                 title = { Text("Place Order") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
         }
     ) { innerPadding ->
-        // Defensive check: if this screen is somehow reached without a selected
-        // medicine (e.g. holder wasn't set, or app process was restarted), avoid a crash.
         if (medicine == null) {
             Box(modifier = Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Alignment.Center) {
                 Text("No medicine selected.")
@@ -61,13 +58,10 @@ fun OrderScreen(
         }
 
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding).padding(16.dp)) {
-            // Summary of what's being ordered
             Text(medicine.medicineName, style = MaterialTheme.typography.titleLarge)
             Text("${medicine.pharmacyName} — KES ${medicine.price}")
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Delivery vs Pickup toggle — determines which backend endpoint gets called
-            // and which fields are shown/required below.
             Row {
                 FilterChip(
                     selected = isDelivery,
@@ -85,15 +79,12 @@ fun OrderScreen(
 
             OutlinedTextField(
                 value = quantity,
-                // Filters input to digits only, preventing non-numeric crashes on toIntOrNull() later
                 onValueChange = { quantity = it.filter { c -> c.isDigit() } },
                 label = { Text("Quantity") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Delivery-only fields — backend's /api/orders route requires these,
-            // but /api/reservations does not, so we only show/send them when isDelivery is true.
             if (isDelivery) {
                 OutlinedTextField(
                     value = address,
@@ -108,12 +99,30 @@ fun OrderScreen(
                     label = { Text("Phone Number") },
                     modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Discount preview — purely informational; the ACTUAL discount is
+                // calculated server-side in orderController.ts using the same
+                // checkPremiumStatus() verification. This just previews what the
+                // user should expect before they submit.
+                if (isPremium) {
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            "⭐ Premium: 50% off delivery fee applied at checkout",
+                            modifier = Modifier.padding(12.dp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(
                 onClick = {
-                    val qty = quantity.toIntOrNull() ?: 1 // fallback to 1 if input is somehow empty
+                    val qty = quantity.toIntOrNull() ?: 1
                     if (isDelivery) {
                         viewModel.placeOrder(medicine.pharmacyId, medicine.medicineId, qty, address, phone)
                     } else {

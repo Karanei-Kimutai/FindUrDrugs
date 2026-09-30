@@ -35,4 +35,7 @@ interface FindUrDrugzApi {
 
     @GET("api/reservations/customer")
     suspend fun getCustomerReservations(): GenericApiResponse<List<OrderOrReservation>>
+
+    @GET("api/subscription/status")
+    suspend fun getSubscriptionStatus(): GenericApiResponse<SubscriptionStatus>
 }

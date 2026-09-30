@@ -47,3 +47,9 @@ data class GenericApiResponse<T>(
     val data: T? = null,
     val message: String? = null
 )
+
+@JsonClass(generateAdapter = true)
+data class SubscriptionStatus(
+    val isPremium: Boolean,
+    val benefit: String
+)

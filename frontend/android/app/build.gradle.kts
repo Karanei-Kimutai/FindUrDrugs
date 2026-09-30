@@ -46,7 +46,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.ui)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
@@ -69,15 +68,13 @@ dependencies {
 
     // ViewModel + Coroutines support for Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
 
     // Navigation for Compose
-    implementation("androidx.navigation:navigation-compose:2.8.0")
+    implementation("androidx.navigation:navigation-compose:2.8.4")
 
-    implementation("androidx.compose.material:material-icons-core:1.7.8")
+    implementation("androidx.compose.material:material-icons-core")
 
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
-    implementation("androidx.activity:activity-compose:1.9.2")
-
+    implementation("com.revenuecat.purchases:purchases:8.16.0")
 }

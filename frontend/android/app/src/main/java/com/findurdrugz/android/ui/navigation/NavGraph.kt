@@ -10,4 +10,6 @@ sealed class Screen(val route: String) {
     object Order : Screen("order")
 
     object History : Screen("history")
+
+    object Premium : Screen("premium")
 }
